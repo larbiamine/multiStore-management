@@ -9,20 +9,15 @@ export class TenantMiddleware implements NestMiddleware {
 
     const hostParts = host.split('.');
     const rootHost = this.configService.getRootHost();
-
-    console.log('🆘 || hostParts:', hostParts);
-
-    if (hostParts[0] == rootHost) {
-      throw new BadRequestException('Root host not allowed');
-    }
-
+    
     let tenantId = hostParts[0];
-
-    console.log('🆘 || tenantId:', tenantId);
-    // get tenant from subdomain
     if (!tenantId) {
       throw new BadRequestException('Tenant not found');
     }
+    if (tenantId == rootHost) {
+      throw new BadRequestException('Root host not allowed');
+    }
+    req.tenantId = tenantId;
     next();
   }
 }

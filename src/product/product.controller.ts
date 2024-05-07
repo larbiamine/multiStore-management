@@ -1,10 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
-import { get } from 'http';
+import { Controller, Get, Req } from '@nestjs/common';
 
 @Controller('product')
 export class ProductController {
     @Get()
-    getProducts(): string {
-        return 'All products';
+    getProducts(@Req() req: Request): string {
+        const tenantId = req['tenantId'];
+        return tenantId+"'s products";
     }
 }
