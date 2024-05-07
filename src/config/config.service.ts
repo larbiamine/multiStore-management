@@ -18,4 +18,7 @@ export class MyConfigService {
   getDbUrl(): string {
     return this.configService.get<string>('DATABASE_URL');
   }
+  getRootHost(): string {
+    return this.configService.get<string>('ROOT_HOSTNAME');
+  }
 }
