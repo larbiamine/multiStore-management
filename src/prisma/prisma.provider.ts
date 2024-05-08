@@ -1,20 +1,22 @@
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import {
-  FactoryProvider,
-  Injectable,
-  OnModuleDestroy,
-  Scope,
-} from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class PrismaClientManager implements OnModuleDestroy {
   private clients: { [key: string]: PrismaClient } = {};
 
-  async getClient(tenantId: string): Promise<PrismaClient> {
+  getTenantId(request: Request):string {
+    return request["tenantId"];
+  }
+
+  getClient(request: Request): PrismaClient {
+    const tenantId = this.getTenantId(request);
+
     let client = this.clients[tenantId];
+
     if (!client) {
-      const databaseUrl = process.env.DATABASE_URL.replace('public', tenantId);
+      const databaseUrl = process.env.DATABASE_URL!.replace('public', tenantId);
 
       client = new PrismaClient({
         datasources: {
@@ -23,8 +25,12 @@ export class PrismaClientManager implements OnModuleDestroy {
           },
         },
       });
+
+      // setup prisma middlewares if any
+
       this.clients[tenantId] = client;
     }
+
     return client;
   }
 
@@ -34,16 +40,3 @@ export class PrismaClientManager implements OnModuleDestroy {
     );
   }
 }
-
-export interface ContextPayload {
-  tenantId: string;
-}
-
-export const prismaClientProvider: FactoryProvider<PrismaClient> = {
-  provide: PrismaClient,
-  scope: Scope.REQUEST,
-  useFactory: (ctxPayload: ContextPayload, manager: PrismaClientManager) => {
-    return manager.getClient(ctxPayload.tenantId);
-  },
-  inject: [REQUEST, PrismaClientManager],
-};

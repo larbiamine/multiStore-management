@@ -1,10 +1,22 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ProductService } from './product.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { Product } from '@prisma/client';
 
 @Controller('product')
 export class ProductController {
+    constructor(
+        private productService: ProductService
+    ) {}
     @Get()
-    getProducts(@Req() req: Request): string {
-        const tenantId = req['tenantId'];
-        return tenantId+"'s products";
+    getProducts(): Promise< Product[]> {
+
+        return this.productService.findAll();
+        
+    }
+
+    @Post()
+    createProduct(@Body() createProductDto: CreateProductDto): Promise<any> {
+        return this.productService.create(createProductDto);        
     }
 }
