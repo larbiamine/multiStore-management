@@ -1,23 +1,22 @@
-import { Request } from 'express';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { FactoryProvider, Injectable, OnModuleDestroy, Scope } from '@nestjs/common';
-import { MyConfigService } from 'src/config/config.service';
-import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class PrismaClientManager implements OnModuleDestroy {
   private clients: { [key: string]: PrismaClient } = {};
 
-  constructor(private configService: MyConfigService) {}
+  getTenantId(request: Request):string {
+    return request["tenantId"];
+  }
 
-  async getClient(tenantId: string): Promise<PrismaClient> {
+  getClient(request: Request): PrismaClient {
+    const tenantId = this.getTenantId(request);
 
     let client = this.clients[tenantId];
+
     if (!client) {
-      //   const databaseUrl = process.env.DATABASE_URL.replace('public', tenantId);
-      const databaseUrl = this.configService
-        .getDbUrl()
-        .replace('public', tenantId);
+      const databaseUrl = process.env.DATABASE_URL!.replace('public', tenantId);
 
       client = new PrismaClient({
         datasources: {
@@ -26,6 +25,8 @@ export class PrismaClientManager implements OnModuleDestroy {
           },
         },
       });
+
+      // setup prisma middlewares if any
 
       this.clients[tenantId] = client;
     }
@@ -39,21 +40,3 @@ export class PrismaClientManager implements OnModuleDestroy {
     );
   }
 }
-
-export interface ContextPayload {
-    tenantId: string;
-  }
-  
-  export const prismaClientProvider: FactoryProvider<PrismaClient> = {
-    provide: PrismaClient,
-    scope: Scope.REQUEST,
-    durable: true, // Makes this provider durable
-    useFactory: (ctxPayload: ContextPayload, manager: PrismaClientManager) => {
-      /* 
-        The tenantId in the context payload registered 
-        in the AggregateByTenantContextIdStrategy 
-      */
-      return manager.getClient(ctxPayload.tenantId);
-    },
-    inject: [REQUEST, PrismaClientManager],
-  };
