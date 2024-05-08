@@ -8,10 +8,11 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { TenantController } from './tenant/tenant.controller';
 import { TenantModule } from './tenant/tenant.module';
+import { PrismaClientManager } from './prisma/prisma.provider';
 
 @Module({
-  imports: [PrismaModule, RequestContextModule, MyConfigModule, ProductModule, OrderModule, TenantModule],
+  imports: [PrismaModule, RequestContextModule, MyConfigModule, ProductModule, OrderModule, TenantModule,  ],
   controllers: [AppController, TenantController],
-  providers: [AppService],
+  providers: [AppService, PrismaClientManager ],
 })
 export class AppModule {}
