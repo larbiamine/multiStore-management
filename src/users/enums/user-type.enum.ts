@@ -1,6 +1,6 @@
 
-export enum UserType {
-    Owner = 'owner',
-    Guest = 'guest',
-  }
+// export enum UserType {
+//     Owner = 'owner',
+//     Guest = 'guest',
+//   }
   

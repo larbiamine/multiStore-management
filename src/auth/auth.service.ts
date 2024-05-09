@@ -51,10 +51,11 @@ export class AuthService {
         if (!validatedUser) {
             throw new NotFoundException('Invalid credentials');
         }else{
-            const {email, type} = validatedUser
+            const {email, type, storeId} = validatedUser
             const payload = {
               email,
-              type
+              type,
+              storeId
             };
             return {
                 token: await this.jwtService.generateToken(payload)

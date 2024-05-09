@@ -10,14 +10,21 @@ export class CreateUserDto {
   @IsEmail({}, { message: 'Invalid email format' })
   readonly email: string;
 
-  @IsNotEmpty({ message: 'StoreId is required' })
-  readonly storeId: string;
+
 
   @IsNotEmpty({ message: 'Password is required' })
   @IsString({ message: 'Password must be a string' })
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   readonly password: string;
 
+
+  // @IsNotEmpty({ message: 'StoreId is required' })
+  @Optional()
+  storeId: string;
   @Optional()
   type: UserType;
+  @Optional()
+  firstname: UserType;
+  @Optional()
+  lastname: UserType;
 }
