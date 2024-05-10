@@ -21,4 +21,7 @@ export class MyConfigService {
   getRootHost(): string {
     return this.configService.get<string>('ROOT_HOSTNAME');
   }
+  getDatabaseName(): string {
+    return this.configService.get<string>('DATABASE_NAME');
+  }
 }

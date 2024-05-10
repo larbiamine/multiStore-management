@@ -1,22 +1,24 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { Request } from 'express';
+import { MyConfigService } from 'src/config/config.service';
 
 @Injectable()
 export class PrismaClientManager implements OnModuleDestroy {
   private clients: { [key: string]: PrismaClient } = {};
-
-  getTenantId(request: Request):string {
-    return request["tenantId"];
+  private configService: MyConfigService
+  getStoreId(request: Request):string {
+    return request["storeId"];
   }
 
   getClient(request: Request): PrismaClient {
-    const tenantId = this.getTenantId(request);
+    const storeId = this.getStoreId(request);
 
-    let client = this.clients[tenantId];
+    let client = this.clients[storeId];
 
     if (!client) {
-      const databaseUrl = process.env.DATABASE_URL!.replace('public', tenantId);
+      // const databaseUrl = process.env.DATABASE_URL!.replace('public', storeId);
+      const databaseUrl = this.configService.getDbUrl().replace('public', storeId);
 
       client = new PrismaClient({
         datasources: {
@@ -28,7 +30,7 @@ export class PrismaClientManager implements OnModuleDestroy {
 
       // setup prisma middlewares if any
 
-      this.clients[tenantId] = client;
+      this.clients[storeId] = client;
     }
 
     return client;

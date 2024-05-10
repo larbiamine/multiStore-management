@@ -10,14 +10,14 @@ export class TenantMiddleware implements NestMiddleware {
     const hostParts = host.split('.');
     const rootHost = this.configService.getRootHost();
     
-    let tenantId = hostParts[0];
-    if (!tenantId) {
-      throw new BadRequestException('Tenant not found');
+    let storeId = hostParts[0];
+    if (!storeId) {
+      throw new BadRequestException('Store not found');
     }
-    if (tenantId == rootHost) {
+    if (storeId == rootHost) {
       throw new BadRequestException('Root host not allowed');
     }
-    req.tenantId = tenantId;
+    req.storeId = "store_"+storeId;
     next();
   }
 }

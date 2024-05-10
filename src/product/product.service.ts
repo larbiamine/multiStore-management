@@ -13,7 +13,6 @@ export class ProductService {
   }
 
   async findAll(): Promise<Product[]> {
-    console.log("🆘 || this.prisma:", this.prisma)
     return this.prisma.product.findMany();
   }
 
