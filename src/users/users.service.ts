@@ -32,10 +32,15 @@ export class UsersService {
         // create schema for store
         const schemaName = `store_${storeId}`
         const schema = await this.createSchema(schemaName);
+
         const productTable = await this.createTable("Product",schemaName);
         const orderTable = await this.createTable("Order",schemaName);
-        const relations = await this.prisma.runRelations("relations", schemaName);
+
+        const relations = 0;
+        // const relations = await this.prisma.runRelations("relations", schemaName);
+
         if (schema != 0 || productTable != 0 || orderTable != 0 || relations != 0) {
+          //delete user if schema creation fails
           await this.prisma.user.delete({
             where: {
               email: email,
@@ -44,7 +49,6 @@ export class UsersService {
           throw new NotFoundException('Error creating store schema');
         }
   
-        //delete user if schema creation fails
 
         const { password, ...returnUser } = user;
         return returnUser;
@@ -85,7 +89,8 @@ export class UsersService {
       }
       async createTable(tableName:string, schemaName:string): Promise<number|boolean> {
         
-        return await this.prisma.createTable(tableName, schemaName);
+        // return await this.prisma.createTable(tableName, schemaName);
+        return await this.prisma.createNewTable(tableName, schemaName);
       }
 
       async findAll() {

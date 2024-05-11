@@ -18,6 +18,9 @@ export class MyConfigService {
   getDbUrl(): string {
     return this.configService.get<string>('DATABASE_URL');
   }
+  getDbSchemaUrl(schema:string): string {
+    return this.configService.get<string>('DATABASE_URL').replace('public', schema);
+  }
   getRootHost(): string {
     return this.configService.get<string>('ROOT_HOSTNAME');
   }
