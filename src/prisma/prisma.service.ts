@@ -37,18 +37,47 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       return false;
     }
   }
-  async runRelations(fileName: string, schemaName:string): Promise<number | boolean> {
-
+  async createNewTable(tableName: string, schemaName:string): Promise<number | boolean> {
     try {
+      const client = await this.createPrismaClient(schemaName);
+      const filePath = `./src/database/tableCreations/${tableName}.sql`;
+      let sqlScript = fs.readFileSync(filePath, 'utf8');
+      // sqlScript = sqlScript.replace(`CREATE TABLE "${tableName}"`, `CREATE TABLE ${schemaName}."${tableName}"`);      // const res = await this.prisma.$executeRaw(sqlScript);
+      const res = await client.$executeRawUnsafe(sqlScript);
+      client.$disconnect();
+      return res;
+    } catch (error) {
+      console.log(`🆘 || error: createTable ${tableName} `, error);
+      return false;
+    }
+  }
+  async runRelations(fileName: string, schemaName:string): Promise<number | boolean> {
+    
+    try {
+      const client = await this.createPrismaClient(schemaName);
       const filePath = `./src/database/tableCreations/${fileName}.sql`;
       let sqlScript = fs.readFileSync(filePath, 'utf8');
-      sqlScript = sqlScript.replace(`"Product"`, `${schemaName}."Product"`);      // const res = await this.prisma.$executeRaw(sqlScript);
-      sqlScript = sqlScript.replace(`"Order"`, `${schemaName}."Order"`);      // const res = await this.prisma.$executeRaw(sqlScript);
-      const res = await this.prisma.$executeRawUnsafe(sqlScript);
+      // sqlScript = sqlScript.replace(`"Product"`, `${schemaName}."Product"`);      // const res = await this.prisma.$executeRaw(sqlScript);
+      // sqlScript = sqlScript.replace(`"Order"`, `${schemaName}."Order"`);      // const res = await this.prisma.$executeRaw(sqlScript);
+      const res = await client.$executeRawUnsafe(sqlScript);
+      client.$disconnect();
       return res;
     } catch (error) {
       console.log('🆘 || error: runRelations', error);
       return false;
     }
   }
+
+  async createPrismaClient(schema: string) {
+    const client = new PrismaClient({
+      datasources: {
+        db: {
+          url: this.configService.getDbSchemaUrl(schema),
+        },
+      },
+    });
+    client.$connect();
+    return client;
+  }
+
 }
