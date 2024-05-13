@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserType } from '@prisma/client';
@@ -6,7 +6,9 @@ import { MyConfigService } from 'src/config/config.service';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService,
+    constructor(
+      @Inject(forwardRef(() => PrismaService))
+      private prisma: PrismaService,
       private configService: MyConfigService,
       ) {}
 
@@ -78,6 +80,14 @@ export class UsersService {
         const user = await this.prisma.user.findUnique({
           where: {
             email: email,
+          },
+        });
+        return user;
+      }
+      async findOneByStoreId(storeId: string): Promise<User | null> {
+        const user = await this.prisma.user.findFirst({
+          where: {
+            storeId: storeId,
           },
         });
         return user;

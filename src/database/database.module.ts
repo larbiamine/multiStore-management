@@ -2,7 +2,9 @@ import { FactoryProvider, Global, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
 import { Request } from 'express';
+import { MyConfigModule } from 'src/config/config.module';
 import { PrismaClientManager } from 'src/prisma/prisma.provider';
+import { UsersModule } from 'src/users/users.module';
 
 const prismaClientProvider: FactoryProvider<PrismaClient> = {
   provide: PrismaClient,
@@ -13,6 +15,7 @@ const prismaClientProvider: FactoryProvider<PrismaClient> = {
 };
 @Global()
 @Module({
+  imports: [MyConfigModule, UsersModule],
   providers: [PrismaClientManager, prismaClientProvider],
   exports: [PrismaClient],
 })

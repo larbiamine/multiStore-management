@@ -1,24 +1,43 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Inject, Injectable, NotFoundException, OnModuleDestroy, forwardRef } from '@nestjs/common';
+import { PrismaClient, User } from '@prisma/client';
 import { Request } from 'express';
 import { MyConfigService } from 'src/config/config.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PrismaClientManager implements OnModuleDestroy {
   private clients: { [key: string]: PrismaClient } = {};
-  private configService: MyConfigService
-  getStoreId(request: Request):string {
-    return request["storeId"];
+
+  constructor(
+    private configService: MyConfigService,
+    @Inject(forwardRef(() => UsersService))
+    private usersService: UsersService,
+  ) {}
+
+  getStoreId(request: Request): string {
+    return request['storeId'];
   }
 
-  getClient(request: Request): PrismaClient {
+  async getUserByStore(storeId: string): Promise<User> {
+    return await this.usersService.findOneByStoreId(storeId);
+  }
+
+  async getClient(request: Request): Promise<PrismaClient> {
     const storeId = this.getStoreId(request);
 
     let client = this.clients[storeId];
 
     if (!client) {
+      const user = await this.getUserByStore(storeId);
+      // check if store exists in the database
+      if (!user) {
+        throw new NotFoundException('Store not found');
+      }
+
       // const databaseUrl = process.env.DATABASE_URL!.replace('public', storeId);
-      const databaseUrl = this.configService.getDbUrl().replace('public', storeId);
+      const databaseUrl = this.configService
+        .getDbUrl()
+        .replace('public', storeId);
 
       client = new PrismaClient({
         datasources: {
