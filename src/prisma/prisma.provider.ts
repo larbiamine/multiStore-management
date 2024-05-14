@@ -14,16 +14,12 @@ export class PrismaClientManager implements OnModuleDestroy {
     private usersService: UsersService,
   ) {}
 
-  getStoreId(request: Request): string {
-    return request['storeId'];
-  }
-
   async getUserByStore(storeId: string): Promise<User> {
     return await this.usersService.findOneByStoreId(storeId);
   }
 
   async getClient(request: Request): Promise<PrismaClient> {
-    const storeId = this.getStoreId(request);
+    const storeId = request['storeId'];
 
     let client = this.clients[storeId];
 
