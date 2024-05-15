@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserType } from '@prisma/client';
 import { MyConfigService } from 'src/config/config.service';
+import { ReturnedUser } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -103,8 +104,13 @@ export class UsersService {
         return await this.prisma.createNewTable(tableName, schemaName);
       }
 
-      async findAll() {
-        return this.prisma.user.findMany();
+      async findAll(): Promise<ReturnedUser[]>{
+        const users = await this.prisma.user.findMany();
+        const filteredUsers = users.map((user) => {
+          const { password, ...rest } = user;
+          return rest;
+        })
+        return filteredUsers;
       }
 
 }
