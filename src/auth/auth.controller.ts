@@ -12,6 +12,8 @@ import { UserType } from '@prisma/client';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @UseGuards(JwtAuthGuard, UserTypesGuard)
+    @TypeUser(UserType.superAdmin)
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto):Promise<ReturnedUser> {
       return this.authService.register(createUserDto);
