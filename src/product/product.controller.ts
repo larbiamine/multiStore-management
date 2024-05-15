@@ -21,10 +21,13 @@ export class ProductController {
         return this.productService.findAll();
     }
 
+    @UseGuards(JwtAuthGuard, UserTypesGuard)
+    @TypeUser(UserType.store)
     @Post()
     createProduct(@Body() createProductDto: CreateProductDto): Promise<any> {
         return this.productService.create(createProductDto);        
     }
+
     @Put(':id')
     @UseGuards(JwtAuthGuard, UserTypesGuard)
     @TypeUser(UserType.store)

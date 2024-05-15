@@ -33,7 +33,7 @@ export class UsersService {
             data: createUserDto,
         });
         // create schema for store
-        const schemaName = `store_${storeId}`
+        const schemaName = storeId;
         const schema = await this.createSchema(schemaName);
 
         const productTable = await this.createTable("Product",schemaName);

@@ -25,6 +25,7 @@ export class PrismaClientManager implements OnModuleDestroy {
 
     if (!client) {
       const user = await this.getUserByStore(storeId);
+
       // check if store exists in the database
       if (!user) {
         throw new NotFoundException('Store not found');

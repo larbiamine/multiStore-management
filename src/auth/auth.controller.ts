@@ -7,6 +7,7 @@ import { TypeUser } from 'src/users/decorators/types.decorators';
 import { ReturnedUser } from 'src/users/user.entity';
 import { TokenResponse } from './auth.entity';
 import { UserType } from '@prisma/client';
+import { create } from 'domain';
 
 @Controller('auth')
 export class AuthController {

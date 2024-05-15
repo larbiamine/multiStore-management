@@ -19,6 +19,7 @@ export class AuthService {
 
     async register(createUserDto: CreateUserDto, admin = false): Promise<ReturnedUser>{
         const { password, ...rest } = createUserDto;
+        rest.storeId = "store_"+rest.storeId;
         const EncryptionKey = this.configService.getEncryptionKey();
         if (!EncryptionKey) {
             throw new NotFoundException('Encryption key not found');
