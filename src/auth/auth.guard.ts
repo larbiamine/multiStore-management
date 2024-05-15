@@ -6,6 +6,7 @@ import {
   } from '@nestjs/common';
   import { Request } from 'express';
   import { MyJwtService } from 'src/jwt/jwt.service';
+import { TenantMiddleware } from 'src/middlewares/tenant.middleware';
   
   interface AuthRequest extends Request {
     auth?: any; // Modify 'any' to the type of 'auth' if you have a specific type
@@ -16,6 +17,7 @@ import {
   export class JwtAuthGuard implements CanActivate {
     constructor(
       private myJwtService: MyJwtService,
+      // private tennantMiddleWare: TenantMiddleware
     ) {}
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest<AuthRequest>();
@@ -23,7 +25,10 @@ import {
 
       try {
         const auth = await this.myJwtService.verifyToken(token);
-
+        // const storeId = this.tennantMiddleWare.getStoreId(request)
+        // if (storeId != auth.storeId) {
+        //   throw new UnauthorizedException('Invalid token');
+        // }
         request['auth'] = auth;
         return true;
       } catch (error) {

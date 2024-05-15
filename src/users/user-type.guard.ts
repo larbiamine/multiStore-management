@@ -24,7 +24,7 @@ export class UserTypesGuard implements CanActivate {
     if (!auth) {
       return false;
     } else {
-      return auth.type === requiredUserTypes[0];
+      return auth.type === requiredUserTypes[0] || auth.type === UserType.superAdmin;
     }
   }
 }

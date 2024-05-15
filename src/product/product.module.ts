@@ -3,10 +3,11 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { TenantMiddleware } from 'src/middlewares/tenant.middleware';
 import { MyConfigModule } from 'src/config/config.module';
+import { MyJwtModule } from 'src/jwt/jwt.module';
 // import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [MyConfigModule],
+  imports: [MyConfigModule, MyJwtModule],
   providers: [ProductService ],
   controllers: [ProductController],
   
