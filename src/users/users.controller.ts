@@ -1,6 +1,9 @@
 import { Controller, Get, Req, UseGuards,  } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
+import { TypeUser } from './decorators/types.decorators';
+import { UserType } from '@prisma/client';
+import { UserTypesGuard } from './user-type.guard';
 
 @Controller('users')
 export class UsersController {
@@ -9,11 +12,10 @@ export class UsersController {
       ) {}
     
     
-      @UseGuards(JwtAuthGuard)
+      @UseGuards(JwtAuthGuard, UserTypesGuard)
+      @TypeUser(UserType.superAdmin)
       @Get()
-      findAll(@Req() request: Request) {
-        console.log(request.headers);
-
+      findAll() {
         return this.usersService.findAll();
       }
 }
